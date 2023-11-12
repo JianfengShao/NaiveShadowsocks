@@ -3,6 +3,7 @@ import socket
 
 from utils import config
 from utils import securesocket
+from utils import cipher
 
 
 class NsServer:
@@ -13,7 +14,7 @@ class NsServer:
 
     async def listen(self):
         self.loop = asyncio.get_running_loop()
-        self.secureSocket = securesocket.SecureSocket(self.loop)
+        self.secureSocket = securesocket.SecureSocket(self.loop, cipher.load_password())
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
             listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
