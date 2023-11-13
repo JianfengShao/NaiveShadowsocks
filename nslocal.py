@@ -35,9 +35,29 @@ class NsLocal:
             app_sock.close()
             print('- Finish application connection')
 
+        # reflect = asyncio.create_task(self.secureSocket.encodeCopy(app_sock, remote_sock))
+        # reflect.add_done_callback(cleanUp)
+
+        # app2remote = asyncio.create_task(self.secureSocket.encodeCopy(app_sock, remote_sock))
+        # remote2app = asyncio.create_task(self.secureSocket.decodeCopy(remote_sock, app_sock))
+        # task = asyncio.create_task(
+        #     asyncio.gather(
+        #         app2remote,
+        #         remote2app,
+        #         return_exceptions=True)
+        # )
+
         remote_sock = await self.dialRemote()
-        reflect = asyncio.create_task(self.secureSocket.encodeCopy(app_sock, remote_sock))
-        reflect.add_done_callback(cleanUp)
+        app2remote = self.secureSocket.encodeCopy(app_sock, remote_sock)
+        remote2app = self.secureSocket.decodeCopy(remote_sock, app_sock)
+        task = await asyncio.gather(
+            app2remote,
+            remote2app,
+            return_exceptions=True
+        )
+
+        app_sock.close()
+        remote_sock.close()
 
     async def dialRemote(self):
         """
